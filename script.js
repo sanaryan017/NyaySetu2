@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // 1. LOGIN
+    // LOGIN
     document.getElementById("loginForm")?.addEventListener("submit", function (e) {
         e.preventDefault();
         const username = document.getElementById("loginUsername").value;
@@ -19,13 +19,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // 2. SIGNUP (with security question)
+    // SIGNUP
     document.getElementById("signupForm")?.addEventListener("submit", function (e) {
         e.preventDefault();
         const username = document.getElementById("signupUsername").value;
         const password = document.getElementById("signupPassword").value;
         const question = document.getElementById("signupSecurityQuestion").value;
         const answer = document.getElementById("signupSecurityAnswer").value;
+
+        if (!username || !password || !question || !answer) return;
 
         let users = JSON.parse(localStorage.getItem("users")) || [];
 
@@ -36,14 +38,12 @@ document.addEventListener("DOMContentLoaded", function () {
             users.push({ username, password, question, answer: answer.toLowerCase() });
             localStorage.setItem("users", JSON.stringify(users));
             document.getElementById("signupError").innerText = "";
-            document.getElementById("signupMessage").innerText = "Signup successful! Redirecting to login...";
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 1500);
+            document.getElementById("signupMessage").innerText = "Signup successful! Redirecting...";
+            setTimeout(() => window.location.href = "index.html", 1500);
         }
     });
 
-    // 3. FORGOT PASSWORD with security verification
+    // FORGOT PASSWORD — Show question
     document.getElementById("forgotUsername")?.addEventListener("blur", function () {
         const username = this.value.trim();
         const users = JSON.parse(localStorage.getItem("users")) || [];
@@ -53,22 +53,22 @@ document.addEventListener("DOMContentLoaded", function () {
         const questionText = document.getElementById("displayedQuestion");
 
         if (user) {
-            let questionTextValue = "";
-            if (user.question === "pet") questionTextValue = "What is your pet’s name?";
-            if (user.question === "school") questionTextValue = "What was your first school?";
-            if (user.question === "city") questionTextValue = "Which city were you born in?";
-
+            let q = "";
+            if (user.question === "pet") q = "What is your pet’s name?";
+            if (user.question === "school") q = "What was your first school?";
+            if (user.question === "city") q = "Which city were you born in?";
             questionBox.style.display = "block";
-            questionText.innerText = questionTextValue;
+            questionText.innerText = q;
             document.getElementById("forgotResult").innerText = "";
+            document.getElementById("resetPasswordBox").style.display = "none";
         } else {
             questionBox.style.display = "none";
             document.getElementById("forgotResult").innerText = "Username not found.";
         }
     });
 
-    document.getElementById("forgotForm")?.addEventListener("submit", function (e) {
-        e.preventDefault();
+    // FORGOT PASSWORD — Verify answer
+    document.getElementById("verifyAnswerBtn")?.addEventListener("click", function () {
         const username = document.getElementById("forgotUsername").value.trim();
         const answer = document.getElementById("forgotAnswer").value.trim().toLowerCase();
 
@@ -76,25 +76,46 @@ document.addEventListener("DOMContentLoaded", function () {
         const user = users.find(u => u.username === username);
 
         if (user && user.answer === answer) {
-            document.getElementById("forgotResult").innerText = "✅ Your password is: " + user.password;
+            document.getElementById("resetPasswordBox").style.display = "block";
+            document.getElementById("forgotResult").innerText = "";
         } else {
             document.getElementById("forgotResult").innerText = "Incorrect answer.";
         }
     });
 
-    // 4. LOGOUT
+    // FORGOT PASSWORD — Reset
+    document.getElementById("forgotForm")?.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const username = document.getElementById("forgotUsername").value.trim();
+        const newPassword = document.getElementById("newPassword").value;
+
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        const index = users.findIndex(u => u.username === username);
+
+        if (index !== -1) {
+            users[index].password = newPassword;
+            localStorage.setItem("users", JSON.stringify(users));
+            document.getElementById("forgotSuccess").innerText = "✅ Password reset! You can now log in.";
+            document.getElementById("forgotResult").innerText = "";
+            document.getElementById("resetPasswordBox").style.display = "none";
+        } else {
+            document.getElementById("forgotResult").innerText = "Something went wrong. Try again.";
+        }
+    });
+
+    // LOGOUT
     document.getElementById("logout")?.addEventListener("click", function () {
         localStorage.removeItem("currentUser");
         window.location.href = "index.html";
     });
 
-    // 5. DISPLAY USERNAME IN HEADER
+    // USERNAME DISPLAY
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
     if (currentUser && document.getElementById("profileName")) {
         document.getElementById("profileName").innerText = `👤 ${currentUser.username}`;
     }
 
-    // 6. DASHBOARD KEYWORD DETECTION
+    // DASHBOARD CRIME DETECTION
     document.getElementById("crimeForm")?.addEventListener("submit", function (e) {
         e.preventDefault();
         const description = document.getElementById("crimeDescription").value.toLowerCase();
@@ -139,122 +160,122 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = "result.html";
     });
 
-    // 7. RESULT PAGE INFO DISPLAY
+    // RESULT DISPLAY
     if (window.location.pathname.endsWith("result.html")) {
         const crimeData = {
             theft: {
                 ipc: "IPC 378",
                 action: "File FIR",
                 punishment: "3 years or fine",
-                steps: "Go to the nearest police station with any evidence like bills, photos, or witness statement. File an FIR under IPC 378."
+                steps: "Go to the nearest police station with evidence like bills, photos, or witness statements. File FIR under IPC 378."
             },
             assault: {
                 ipc: "IPC 351",
                 action: "Police complaint",
                 punishment: "3 months or fine",
-                steps: "Visit your local police station. Submit a medical report if injured. File a complaint under IPC 351."
+                steps: "Visit your local police station. Submit medical report if injured. File complaint under IPC 351."
             },
             fraud: {
                 ipc: "IPC 420",
                 action: "Report to EOW",
                 punishment: "7 years and fine",
-                steps: "Contact the Economic Offences Wing or file an FIR. Bring transaction records, messages, or emails as proof."
+                steps: "Contact Economic Offences Wing or file FIR. Bring transaction records, messages, or emails as proof."
             },
             murder: {
                 ipc: "IPC 302",
                 action: "Immediate FIR and arrest",
                 punishment: "Death or life imprisonment",
-                steps: "Dial 100 or go to police immediately. Give as much detail as possible. Ensure a postmortem is conducted if needed."
+                steps: "Dial 100 or go to police immediately. Provide full detail. Ensure postmortem is done if needed."
             },
             cybercrime: {
                 ipc: "IT Act Sec 66",
                 action: "Cyber Cell Complaint",
                 punishment: "3 years and fine",
-                steps: "File an online complaint at cybercrime.gov.in or visit nearest cyber cell with screenshots and logs."
+                steps: "File online complaint at cybercrime.gov.in or visit cyber cell with screenshots/logs."
             },
             rape: {
                 ipc: "IPC 376",
-                action: "Immediate police complaint",
-                punishment: "7 years to life imprisonment",
-                steps: "Go to police station or dial 112. Medical examination is needed. You can also reach out to women’s helplines."
+                action: "Police complaint",
+                punishment: "7 years to life",
+                steps: "Go to police station or dial 112. Medical examination required. Women’s helpline also available."
             },
             kidnapping: {
                 ipc: "IPC 363",
                 action: "File FIR",
                 punishment: "7 years and fine",
-                steps: "Go to the police station with last known location of the victim. Provide photos, name, and age."
+                steps: "Visit police with last known location of victim. Provide photo, name, and age."
             },
             bribery: {
                 ipc: "IPC 171E",
                 action: "Report to ACB",
                 punishment: "1 year or fine",
-                steps: "Call Anti-Corruption Bureau helpline. If safe, record proof of bribery demand and submit."
+                steps: "Call Anti-Corruption Bureau. If safe, record proof of bribery and report it."
             },
             defamation: {
                 ipc: "IPC 499",
-                action: "File complaint",
+                action: "Legal complaint",
                 punishment: "2 years or fine",
-                steps: "Submit printed/recorded false statement to magistrate. File a private complaint or FIR if needed."
+                steps: "Submit proof (printed/recorded). File complaint to magistrate or lodge FIR."
             },
             domesticViolence: {
                 ipc: "IPC 498A",
                 action: "Police complaint",
                 punishment: "3 years and fine",
-                steps: "Go to police or women’s cell. You can also approach the District Protection Officer for support."
+                steps: "Go to police or women's protection cell. Also contact protection officer or NGOs."
             },
             drugs: {
                 ipc: "NDPS Act",
-                action: "Narcotics Bureau",
-                punishment: "10 years to life imprisonment",
-                steps: "Call Narcotics Control Bureau or file FIR. Provide tip-offs or evidence discreetly if possible."
+                action: "Report to Narcotics Bureau",
+                punishment: "10 years to life",
+                steps: "Call Narcotics Control Bureau. Report discreetly. Provide tip-offs or proof."
             },
             stalking: {
                 ipc: "IPC 354D",
                 action: "Police complaint",
                 punishment: "3 years and fine",
-                steps: "Visit your local police station or women helpline. Save messages or call records as proof."
+                steps: "File FIR. Save messages/calls as evidence. Women's helpline can also help."
             },
             arson: {
                 ipc: "IPC 435",
                 action: "File FIR",
                 punishment: "7 years and fine",
-                steps: "Go to police with photos/videos of fire damage. Fire department report also helps."
+                steps: "Report to police. Include photos or videos. Fire department report helpful too."
             },
             extortion: {
                 ipc: "IPC 384",
                 action: "Police complaint",
                 punishment: "3 years and fine",
-                steps: "Report blackmail or money threats to police. Try to provide call logs, messages or witness if any."
+                steps: "Report to police with call logs, messages, etc. Don’t pay extortion."
             },
             robbery: {
                 ipc: "IPC 392",
                 action: "File FIR",
                 punishment: "10 years and fine",
-                steps: "Go to the nearest police station. Share CCTV footage or eyewitnesses if available."
+                steps: "Go to police station. Share CCTV or witnesses if available."
             },
             acidAttack: {
                 ipc: "IPC 326A",
                 action: "Police complaint",
-                punishment: "10 years to life imprisonment",
-                steps: "Call emergency services immediately. File FIR and seek medical care. Government will cover treatment cost."
+                punishment: "10 years to life",
+                steps: "Call emergency. FIR is compulsory. Medical treatment is government-supported."
             },
             dowryHarassment: {
                 ipc: "IPC 498A",
                 action: "Police complaint",
                 punishment: "3 years and fine",
-                steps: "Contact police or National Commission for Women. Collect any proof like messages or threats."
+                steps: "Visit police or NCW. Collect evidence like messages or threats."
             },
             blackmail: {
                 ipc: "IPC 503",
-                action: "File complaint",
+                action: "Police complaint",
                 punishment: "2 years and fine",
-                steps: "Report to police with screenshots, messages, or recordings. Never give in to threats."
+                steps: "Report to police. Save screenshots or recordings."
             },
             humanTrafficking: {
                 ipc: "IPC 370",
                 action: "File FIR",
-                punishment: "7 to 10 years and fine",
-                steps: "Contact Anti Human Trafficking Units (AHTU) or dial 112. Share location, people involved, and victim info."
+                punishment: "7–10 years and fine",
+                steps: "Contact Anti-Human Trafficking Unit or dial 112. Share victim and suspect info."
             }
         };
 

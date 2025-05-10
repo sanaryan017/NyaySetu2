@@ -19,18 +19,28 @@
       <h2>Forgot Password</h2>
       <form id="forgotForm">
         <input type="text" id="forgotUsername" placeholder="Enter your username" required />
+
         <div id="securityQBox" style="display: none;">
           <p id="displayedQuestion" style="text-align: left; font-weight: bold;"></p>
           <input type="text" id="forgotAnswer" placeholder="Your answer" required />
-          <button type="submit">Get Password</button>
+          <button type="button" id="verifyAnswerBtn">Verify</button>
+        </div>
+
+        <div id="resetPasswordBox" style="display: none;">
+          <input type="password" id="newPassword" placeholder="Enter new password" required />
+          <button type="submit">Reset Password</button>
         </div>
       </form>
+
       <p><a href="index.html">Back to Login</a></p>
+
       <div id="forgotResult" class="error"></div>
+      <div id="forgotSuccess" class="success"></div>
     </div>
   </div>
 
   <script src="script.js"></script>
 </body>
 </html>
+
 
