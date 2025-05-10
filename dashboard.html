@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - NyaySetu</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    
+  <header>
+  <div class="header-top">
+    <h1>NyaySetu</h1>
+    <div class="user-controls">
+      <span id="profileName">👤 User</span>
+      <button id="logout" class="logout-btn">Logout</button>
+    </div>
+  </div>
+</header>
+
+
+  <div class="container">
+    <div class="login-box">
+      <h2>Tell us about the bad experience you faced</h2>
+      <form id="crimeForm">
+        <textarea
+          id="crimeDescription"
+          placeholder="Explain your issue in detail. For example: 'Someone hacked my account and stole money', or 'My husband beats me regularly and demands dowry'..."
+          rows="10"
+          required
+          style="width: 100%; font-size: 16px; padding: 15px; resize: vertical;"
+        ></textarea>
+        <button type="submit">Get Info</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+
+

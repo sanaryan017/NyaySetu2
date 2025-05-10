@@ -1,0 +1,212 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body */
+body {
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f4f4f4;
+}
+
+/* Header Layout */
+header {
+    width: 100%;
+    background-color: #2c3e50;
+    color: white;
+    padding: 20px 30px;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    flex-grow: 1;
+}
+
+/* Username above Logout */
+.user-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+#profileName {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+}
+
+.logout-btn {
+    background-color: #e74c3c;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.logout-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Main Container */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex: 1;
+    background-image: url('asset/lawpeace.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 50px 20px;
+    position: relative;
+}
+
+/* Overlay for readability */
+.container::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 0;
+}
+
+/* Form Wrapper */
+.login-box {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    z-index: 1;
+}
+
+/* Form Headings */
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+/* Inputs & Textarea */
+input, button, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-family: Arial, sans-serif;
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* Buttons */
+button {
+    background-color: #34495e;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #f39c12;
+    color: black;
+}
+
+/* Links */
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Feedback Messages */
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+.success {
+    color: green;
+    margin-top: 10px;
+}
+
+/* Result Box */
+.crime-info-box {
+    text-align: left;
+    padding: 15px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #2c3e50;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+    margin-top: 15px;
+}
+
+.crime-info-box h3 {
+    margin-bottom: 10px;
+    font-size: 20px;
+    color: #34495e;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .login-box {
+        width: 90%;
+    }
+
+    .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    header h1 {
+        text-align: left;
+        font-size: 26px;
+    }
+
+    .user-controls {
+        align-items: flex-start;
+        margin-top: 10px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    h2 {
+        font-size: 20px;
+    }
+
+    input, textarea, button {
+        font-size: 14px;
+    }
+}
+
