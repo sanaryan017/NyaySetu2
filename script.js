@@ -19,19 +19,21 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // 2. SIGNUP
+    // 2. SIGNUP (with security question)
     document.getElementById("signupForm")?.addEventListener("submit", function (e) {
         e.preventDefault();
         const username = document.getElementById("signupUsername").value;
         const password = document.getElementById("signupPassword").value;
+        const question = document.getElementById("signupSecurityQuestion").value;
+        const answer = document.getElementById("signupSecurityAnswer").value;
 
-        users = JSON.parse(localStorage.getItem("users")) || [];
+        let users = JSON.parse(localStorage.getItem("users")) || [];
 
         if (users.some(u => u.username === username)) {
             document.getElementById("signupError").innerText = "Username already taken.";
             document.getElementById("signupMessage").innerText = "";
         } else {
-            users.push({ username, password });
+            users.push({ username, password, question, answer: answer.toLowerCase() });
             localStorage.setItem("users", JSON.stringify(users));
             document.getElementById("signupError").innerText = "";
             document.getElementById("signupMessage").innerText = "Signup successful! Redirecting to login...";
@@ -41,17 +43,42 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // 3. FORGOT PASSWORD
-    document.getElementById("forgotForm")?.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const username = document.getElementById("forgotUsername").value;
+    // 3. FORGOT PASSWORD with security verification
+    document.getElementById("forgotUsername")?.addEventListener("blur", function () {
+        const username = this.value.trim();
         const users = JSON.parse(localStorage.getItem("users")) || [];
         const user = users.find(u => u.username === username);
 
+        const questionBox = document.getElementById("securityQBox");
+        const questionText = document.getElementById("displayedQuestion");
+
         if (user) {
-            document.getElementById("forgotResult").innerText = "Your password is: " + user.password;
+            let questionTextValue = "";
+            if (user.question === "pet") questionTextValue = "What is your pet’s name?";
+            if (user.question === "school") questionTextValue = "What was your first school?";
+            if (user.question === "city") questionTextValue = "Which city were you born in?";
+
+            questionBox.style.display = "block";
+            questionText.innerText = questionTextValue;
+            document.getElementById("forgotResult").innerText = "";
         } else {
+            questionBox.style.display = "none";
             document.getElementById("forgotResult").innerText = "Username not found.";
+        }
+    });
+
+    document.getElementById("forgotForm")?.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const username = document.getElementById("forgotUsername").value.trim();
+        const answer = document.getElementById("forgotAnswer").value.trim().toLowerCase();
+
+        const users = JSON.parse(localStorage.getItem("users")) || [];
+        const user = users.find(u => u.username === username);
+
+        if (user && user.answer === answer) {
+            document.getElementById("forgotResult").innerText = "✅ Your password is: " + user.password;
+        } else {
+            document.getElementById("forgotResult").innerText = "Incorrect answer.";
         }
     });
 
@@ -112,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = "result.html";
     });
 
-    // 7. RESULT DISPLAY
+    // 7. RESULT PAGE INFO DISPLAY
     if (window.location.pathname.endsWith("result.html")) {
         const crimeData = {
             theft: {
@@ -246,3 +273,5 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 });
+
+
