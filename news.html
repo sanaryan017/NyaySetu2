@@ -42,14 +42,13 @@
   </div>
 
   <script>
-    const apiKey = "892b2258b8ad0d166e5fdbe1547f47db"; // Replace with your GNews key
+    const apiKey = "892b2258b8ad0d166e5fdbe1547f47db"; // GNews API Key
+    const container = document.getElementById('newsContainer');
 
-    fetch(`https://gnews.io/api/v4/search?q=crime&lang=en&country=in&max=10&apikey=${apiKey}`)
+    fetch(`https://gnews.io/api/v4/search?q=crime&lang=en&country=in&max=20&apikey=${apiKey}`)
       .then(response => response.json())
       .then(data => {
-        const container = document.getElementById('newsContainer');
         container.innerHTML = '';
-
         if (data.articles && data.articles.length > 0) {
           data.articles.forEach(article => {
             const div = document.createElement('div');
@@ -67,9 +66,37 @@
         }
       })
       .catch(error => {
-        document.getElementById('newsContainer').innerText = "Error loading news.";
         console.error("Error fetching news:", error);
+        container.innerHTML = `<p style="color:red;">Live news not available. Showing sample news below:</p>`;
+
+        const fallbackNews = [
+          {
+            title: "Delhi man arrested for cyber fraud",
+            description: "A 27-year-old was arrested for duping people through fake websites.",
+            url: "#",
+            publishedAt: new Date().toISOString()
+          },
+          {
+            title: "Mumbai police bust major drug racket",
+            description: "Police seized narcotics worth ₹5 crore from a warehouse in Navi Mumbai.",
+            url: "#",
+            publishedAt: new Date().toISOString()
+          }
+        ];
+
+        fallbackNews.forEach(article => {
+          const div = document.createElement('div');
+          div.className = 'news-card';
+          div.innerHTML = `
+            <h3>${article.title}</h3>
+            <div class="timestamp">${new Date(article.publishedAt).toLocaleString()}</div>
+            <p>${article.description}</p>
+            <a href="${article.url}" target="_blank">Read full article</a>
+          `;
+          container.appendChild(div);
+        });
       });
   </script>
 </body>
 </html>
+
