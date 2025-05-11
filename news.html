@@ -42,9 +42,8 @@
   </div>
 
   <script>
-  const apiKey = "892b2258b8ad0d166e5fdbe1547f47db"; // GNews API Key
+  const apiKey = "892b2258b8ad0d166e5fdbe1547f47db"; // Replace with your own if expired
   const container = document.getElementById('newsContainer');
-  const testMode = false; // 🔄 Set to true for test/fallback mode
 
   function displayArticle(article) {
     const div = document.createElement('div');
@@ -58,58 +57,32 @@
     container.appendChild(div);
   }
 
-  function showFallbackNews() {
-    container.innerHTML = `<p style="color:red;">Live news not available. Showing sample news below:</p>`;
-    const fallbackNews = [
-      {
-        title: "Delhi man arrested for cyber fraud",
-        description: "A 27-year-old was arrested for duping people through fake websites.",
-        url: "#",
-        publishedAt: new Date().toISOString()
-      },
-      {
-        title: "Mumbai police bust major drug racket",
-        description: "Police seized narcotics worth ₹5 crore from a warehouse in Navi Mumbai.",
-        url: "#",
-        publishedAt: new Date().toISOString()
-      }
-    ];
-    fallbackNews.forEach(displayArticle);
-  }
-
   async function fetchNews() {
-    container.innerHTML = "🔄 Fetching latest crime news...";
-
-    if (testMode) {
-      console.warn("🧪 Test mode enabled. Showing fallback news.");
-      showFallbackNews();
-      return;
-    }
-
+    container.innerHTML = "🔄 Loading latest crime news...";
     try {
-      const url = `https://gnews.io/api/v4/search?q=crime&lang=en&country=in&max=20&t=${Date.now()}&apikey=${apiKey}`;
-      console.log("🔍 Fetching news from:", url);
-
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`API error: ${response.status}`);
-
+      const url = `https://gnews.io/api/v4/search?q=crime&lang=en&country=in&max=20&apikey=${apiKey}&t=${Date.now()}`;
+      console.log("Fetching news from:", url);
+      const response = await fetch(url, { cache: "no-store" }); // 💥 Force no cache
       const data = await response.json();
-      console.log("✅ Fetched news articles:", data.articles);
+
+      console.log("News fetched:", data.articles);
 
       if (data.articles?.length > 0) {
         container.innerHTML = "";
         data.articles.forEach(displayArticle);
       } else {
-        container.innerText = "❌ No crime news found. Try again later.";
+        container.innerHTML = "❌ No news found right now.";
       }
     } catch (error) {
-      console.error("❌ Error fetching news:", error.message);
-      showFallbackNews();
+      console.error("News fetch error:", error);
+      container.innerHTML = `<p style="color:red;">❌ Failed to load news. Try again later.</p>`;
     }
   }
 
   fetchNews();
 </script>
+
+ 
 
 </body>
 </html>
