@@ -208,5 +208,10 @@ a:hover {
     input, textarea, button {
         font-size: 14px;
     }
+    header h1 {
+    text-align: center;
+    font-size: 26px;
+}
+
 }
 
