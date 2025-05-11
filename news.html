@@ -52,6 +52,8 @@
     const container = document.getElementById('newsContainer');
     const lastUpdated = document.getElementById('lastUpdated');
 
+    const queries = ["crime", "murder", "theft", "rape", "scam"];
+
     function formatTime(date) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }
@@ -73,30 +75,38 @@
       container.appendChild(div);
     }
 
-    async function fetchNews() {
+    async function fetchAllNews() {
       container.innerHTML = "🔄 Loading latest crime news...";
       try {
-        const url = `https://gnews.io/api/v4/search?q=crime&lang=en&country=in&max=20&apikey=${apiKey}&t=${Date.now()}`;
-        const response = await fetch(url, { cache: "no-store" });
-        const data = await response.json();
+        const allArticles = [];
 
-        if (data.articles?.length > 0) {
+        for (let q of queries) {
+          const url = `https://gnews.io/api/v4/search?q=${q}&lang=en&country=in&max=5&apikey=${apiKey}&t=${Date.now()}`;
+          const res = await fetch(url, { cache: "no-store" });
+          const data = await res.json();
+          if (data.articles) allArticles.push(...data.articles);
+        }
+
+        // Remove duplicate articles by URL
+        const uniqueArticles = Array.from(new Map(allArticles.map(a => [a.url, a])).values());
+
+        if (uniqueArticles.length > 0) {
           container.innerHTML = "";
-          data.articles.forEach(displayArticle);
+          uniqueArticles.forEach(displayArticle);
           updateTimestamp();
         } else {
-          container.innerHTML = "❌ No news found right now.";
+          container.innerHTML = "❌ No news found.";
           lastUpdated.textContent = "No news found.";
         }
-      } catch (error) {
-        console.error("News fetch error:", error);
+      } catch (err) {
+        console.error("Fetch error:", err);
         container.innerHTML = `<p style="color:red;">❌ Failed to load news. Try again later.</p>`;
         lastUpdated.textContent = "⚠️ Error fetching news.";
       }
     }
 
-    fetchNews();
-    setInterval(fetchNews, 60 * 1000); // Refresh every 1 minute
+    fetchAllNews();
+    setInterval(fetchAllNews, 60 * 1000); // Auto-refresh every 1 minute
   </script>
 
 </body>
