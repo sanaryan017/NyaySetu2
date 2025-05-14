@@ -103,7 +103,7 @@
   </div>
 
   <script>
-    const apiKey = "62e819c92ce00ebb17882714d5a0ee60";
+    const apiKey = "81dece5dea9954c9a67c325dc53b0b3c";
     const container = document.getElementById('newsContainer');
     const lastUpdated = document.getElementById('lastUpdated');
 
@@ -131,7 +131,7 @@
     async function fetchAllNews() {
       container.innerHTML = "🔄 Loading latest crime news...";
       try {
-        const url = `https://gnews.io/api/v4/search?q=crime&lang=en&country=in&max=50&apikey=${apiKey}`;
+        const url = `https://gnews.io/api/v4/search?q=crime&lang=en&country=in&max=20&apikey=${apiKey}`;
         const res = await fetch(url);
         const data = await res.json();
 
@@ -147,7 +147,6 @@
         container.innerHTML = `<p style="color:red;">❌ Live news not available. Showing sample news below:</p>`;
         lastUpdated.textContent = `⚠️ Error: ${err.message}`;
 
-        // Sample fallback
         const samples = [
           {
             title: "Delhi man arrested for cyber fraud",
@@ -167,7 +166,7 @@
     }
 
     fetchAllNews();
-    setInterval(fetchAllNews, 60000); // Refresh every 60 seconds
+    setInterval(fetchAllNews, 60000);
   </script>
 </body>
 </html>
