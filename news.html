@@ -6,55 +6,58 @@
   <title>Crime News - NyaySetu</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      font-family: sans-serif;
+      background-color: #f2f2f2;
       margin: 0;
       padding: 0;
     }
 
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
+    header {
+      background-color: #007bff;
+      color: white;
       padding: 20px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
     }
 
-    h2 {
-      margin-bottom: 10px;
+    .container {
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
     }
 
     .news-card {
       background: #fff;
-      padding: 16px;
-      margin-bottom: 16px;
+      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .news-card h3 {
-      margin: 0 0 8px;
+      margin-bottom: 10px;
+      font-size: 18px;
     }
 
     .timestamp {
-      font-size: 13px;
-      color: #555;
+      color: #666;
+      font-size: 14px;
       margin-bottom: 10px;
     }
 
-    .last-updated, .filters {
+    .last-updated {
       font-size: 14px;
-      margin-bottom: 20px;
+      color: #333;
+      margin-bottom: 15px;
     }
 
     .refresh-btn {
+      margin-bottom: 20px;
       padding: 10px 16px;
       background: #007bff;
       color: white;
       border: none;
       border-radius: 6px;
-      font-size: 15px;
+      font-size: 16px;
       cursor: pointer;
     }
 
@@ -62,89 +65,81 @@
       background-color: #0056b3;
     }
 
-    .filter-select {
-      padding: 6px;
-      font-size: 14px;
-      margin-left: 10px;
+    @media (max-width: 600px) {
+      .news-card h3 {
+        font-size: 16px;
+      }
+
+      .refresh-btn {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>📰 Latest Crime News (India Today & Zee News)</h2>
-  <div class="last-updated" id="lastUpdated">Loading...</div>
+  <header>
+    <h1>📰 NyaySetu Crime News</h1>
+  </header>
 
-  <div class="filters">
-    <label for="cityFilter">📍 Filter by City/State: </label>
-    <select id="cityFilter" class="filter-select">
-      <option value="">-- All --</option>
-      <option value="Delhi">Delhi</option>
-      <option value="Mumbai">Mumbai</option>
-      <option value="Kolkata">Kolkata</option>
-      <option value="Bangalore">Bangalore</option>
-      <option value="Uttar Pradesh">Uttar Pradesh</option>
-    </select>
-    <button class="refresh-btn" onclick="fetchNews()">🔁 Refresh Now</button>
+  <div class="container">
+    <div class="last-updated" id="lastUpdated">⏳ Loading...</div>
+    <button class="refresh-btn" onclick="fetchNews()">🔁 Refresh</button>
+    <div id="newsContainer">Loading crime news...</div>
   </div>
 
-  <div id="newsContainer">Loading news...</div>
-</div>
+  <script>
+    const apiKey = "c6dee0fde459431e913ced37322cc968";
+    const newsContainer = document.getElementById("newsContainer");
+    const lastUpdated = document.getElementById("lastUpdated");
 
-<script>
-  const API_KEY = "c6dee0fde459431e913ced37322cc968";
-  const newsContainer = document.getElementById("newsContainer");
-  const lastUpdated = document.getElementById("lastUpdated");
-  const cityFilter = document.getElementById("cityFilter");
-
-  function formatTime(date) {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  }
-
-  function updateTimestamp() {
-    const now = new Date();
-    lastUpdated.textContent = `🕒 Last updated: ${formatTime(now)}`;
-  }
-
-  function displayArticle(article) {
-    const city = cityFilter.value.toLowerCase();
-    const content = (article.title + article.description).toLowerCase();
-    if (city && !content.includes(city)) return;
-
-    const card = document.createElement("div");
-    card.className = "news-card";
-    card.innerHTML = `
-      <h3>${article.title}</h3>
-      <div class="timestamp">${new Date(article.publishedAt).toLocaleString()}</div>
-      <p>${article.description || "No description available."}</p>
-      <a href="${article.url}" target="_blank">Read full article →</a>
-    `;
-    newsContainer.appendChild(card);
-  }
-
-  async function fetchNews() {
-    newsContainer.innerHTML = "🔄 Fetching latest news...";
-    try {
-      const url = `https://newsapi.org/v2/everything?q=crime&language=en&pageSize=50&sources=india-today,zee-news&apiKey=${API_KEY}`;
-      const res = await fetch(url);
-      const data = await res.json();
-
-      if (data.status !== "ok") throw new Error("API error");
-
-      newsContainer.innerHTML = "";
-      data.articles.forEach(displayArticle);
-      updateTimestamp();
-    } catch (err) {
-      newsContainer.innerHTML = `<p style="color:red;">❌ Failed to load news. Check console or try later.</p>`;
-      lastUpdated.textContent = `⚠️ Error: ${err.message}`;
-      console.error(err);
+    function formatTime(date) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }
-  }
 
-  cityFilter.addEventListener("change", fetchNews);
-  fetchNews();
-  setInterval(fetchNews, 60 * 1000); // refresh every 1 minute
-</script>
+    function updateTimestamp() {
+      const now = new Date();
+      lastUpdated.textContent = `🕒 Last updated at: ${formatTime(now)}`;
+    }
+
+    function displayArticle(article) {
+      const div = document.createElement("div");
+      div.className = "news-card";
+      div.innerHTML = `
+        <h3>${article.title}</h3>
+        <div class="timestamp">🗓 ${new Date(article.publishedAt).toLocaleString()}</div>
+        <p>${article.description || "No description available."}</p>
+        <p><strong>Source:</strong> ${article.source.name}</p>
+        <a href="${article.url}" target="_blank">🔗 Read full article</a>
+      `;
+      newsContainer.appendChild(div);
+    }
+
+    async function fetchNews() {
+      newsContainer.innerHTML = "🔄 Loading latest crime news...";
+      try {
+        const url = `https://newsapi.org/v2/everything?q=crime&language=en&pageSize=25&sortBy=publishedAt&apiKey=${apiKey}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.status !== "ok") {
+          throw new Error(data.message || "API error");
+        }
+
+        newsContainer.innerHTML = "";
+        data.articles.forEach(displayArticle);
+        updateTimestamp();
+      } catch (err) {
+        console.error("Error:", err);
+        newsContainer.innerHTML = `<p style="color:red;">❌ Failed to load news: ${err.message}</p>`;
+        lastUpdated.textContent = "⚠️ Error occurred while fetching news.";
+      }
+    }
+
+    fetchNews();
+    setInterval(fetchNews, 2 * 60 * 1000); // Auto-refresh every 2 minutes
+  </script>
 
 </body>
 </html>
+
