@@ -4,187 +4,147 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Crime News - NyaySetu</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
-  .news-card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .news-card h3 {
-    margin-bottom: 10px;
-    font-size: 18px;
-  }
-
-  .timestamp {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 10px;
-  }
-
-  .last-updated {
-    font-size: 14px;
-    color: #333;
-    margin-bottom: 15px;
-  }
-
-  .refresh-btn {
-    margin-bottom: 20px;
-    padding: 10px 16px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-
-  .refresh-btn:hover {
-    background-color: #0056b3;
-  }
-
-  .container {
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-  }
-
-  .login-box {
-    max-width: 700px;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  @media (max-width: 768px) {
-    .news-card {
-      padding: 15px;
-      font-size: 15px;
-    }
-
-    .news-card h3 {
-      font-size: 16px;
-    }
-
-    .refresh-btn {
-      font-size: 14px;
-      padding: 8px 12px;
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
     }
 
     .container {
-      padding: 15px;
-    }
-
-    .login-box {
+      max-width: 900px;
+      margin: 30px auto;
       padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-  }
 
-  @media (max-width: 480px) {
+    h2 {
+      margin-bottom: 10px;
+    }
+
     .news-card {
-      padding: 12px;
-      font-size: 14px;
+      background: #fff;
+      padding: 16px;
+      margin-bottom: 16px;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
     }
 
     .news-card h3 {
-      font-size: 15px;
+      margin: 0 0 8px;
     }
 
-    .timestamp, .last-updated {
-      font-size: 12px;
+    .timestamp {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .last-updated, .filters {
+      font-size: 14px;
+      margin-bottom: 20px;
     }
 
     .refresh-btn {
-      width: 100%;
+      padding: 10px 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .refresh-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .filter-select {
+      padding: 6px;
       font-size: 14px;
+      margin-left: 10px;
     }
-
-    .container {
-      padding: 10px;
-    }
-
-    .login-box {
-      padding: 15px;
-    }
-  }
-</style>
-
+  </style>
 </head>
 <body>
 
-  <header>
-    <div class="header-top">
-      <h1>NyaySetu</h1>
-      <div class="user-controls">
-        <a href="dashboard.html"><button class="logout-btn">Back to Dashboard</button></a>
-      </div>
-    </div>
-  </header>
+<div class="container">
+  <h2>📰 Latest Crime News (India Today & Zee News)</h2>
+  <div class="last-updated" id="lastUpdated">Loading...</div>
 
-  <div class="container">
-    <div class="login-box">
-      <h2>Latest Indian Crime News</h2>
-      <div class="last-updated" id="lastUpdated">⏳ Loading...</div>
-      <button class="refresh-btn" onclick="fetchAllNews()">🔁 Refresh Now</button>
-      <div id="newsContainer" class="crime-info-box">🔄 Loading latest crime news...</div>
-    </div>
+  <div class="filters">
+    <label for="cityFilter">📍 Filter by City/State: </label>
+    <select id="cityFilter" class="filter-select">
+      <option value="">-- All --</option>
+      <option value="Delhi">Delhi</option>
+      <option value="Mumbai">Mumbai</option>
+      <option value="Kolkata">Kolkata</option>
+      <option value="Bangalore">Bangalore</option>
+      <option value="Uttar Pradesh">Uttar Pradesh</option>
+    </select>
+    <button class="refresh-btn" onclick="fetchNews()">🔁 Refresh Now</button>
   </div>
 
-  <script>
-    const apiKey = "pub_870507d024926e67c118ea5107c838bc3e002";
-    const container = document.getElementById('newsContainer');
-    const lastUpdated = document.getElementById('lastUpdated');
+  <div id="newsContainer">Loading news...</div>
+</div>
 
-    function formatTime(date) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+<script>
+  const API_KEY = "c6dee0fde459431e913ced37322cc968";
+  const newsContainer = document.getElementById("newsContainer");
+  const lastUpdated = document.getElementById("lastUpdated");
+  const cityFilter = document.getElementById("cityFilter");
+
+  function formatTime(date) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  function updateTimestamp() {
+    const now = new Date();
+    lastUpdated.textContent = `🕒 Last updated: ${formatTime(now)}`;
+  }
+
+  function displayArticle(article) {
+    const city = cityFilter.value.toLowerCase();
+    const content = (article.title + article.description).toLowerCase();
+    if (city && !content.includes(city)) return;
+
+    const card = document.createElement("div");
+    card.className = "news-card";
+    card.innerHTML = `
+      <h3>${article.title}</h3>
+      <div class="timestamp">${new Date(article.publishedAt).toLocaleString()}</div>
+      <p>${article.description || "No description available."}</p>
+      <a href="${article.url}" target="_blank">Read full article →</a>
+    `;
+    newsContainer.appendChild(card);
+  }
+
+  async function fetchNews() {
+    newsContainer.innerHTML = "🔄 Fetching latest news...";
+    try {
+      const url = `https://newsapi.org/v2/everything?q=crime&language=en&pageSize=50&sources=india-today,zee-news&apiKey=${API_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (data.status !== "ok") throw new Error("API error");
+
+      newsContainer.innerHTML = "";
+      data.articles.forEach(displayArticle);
+      updateTimestamp();
+    } catch (err) {
+      newsContainer.innerHTML = `<p style="color:red;">❌ Failed to load news. Check console or try later.</p>`;
+      lastUpdated.textContent = `⚠️ Error: ${err.message}`;
+      console.error(err);
     }
+  }
 
-    function updateTimestamp() {
-      const now = new Date();
-      lastUpdated.textContent = `🕒 Last updated at: ${formatTime(now)}`;
-    }
-
-    function displayArticle(article) {
-      const div = document.createElement('div');
-      div.className = 'news-card';
-      div.innerHTML = `
-        <h3>${article.title || "Untitled Article"}</h3>
-        <div class="timestamp">${new Date(article.pubDate).toLocaleString()}</div>
-        <p>${article.description || "No description available."}</p>
-        <a href="${article.link}" target="_blank">Read full article</a>
-      `;
-      container.appendChild(div);
-    }
-
-    async function fetchAllNews() {
-      container.innerHTML = "🔄 Loading latest crime news...";
-      try {
-        const url = `https://newsdata.io/api/1/news?apikey=${apiKey}&country=in&category=crime&language=en`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        if (!data.results || data.status !== "success") {
-          throw new Error("API Error or no results");
-        }
-
-        container.innerHTML = "";
-        data.results.forEach(displayArticle);
-        updateTimestamp();
-      } catch (err) {
-        console.error("Fetch error:", err);
-        container.innerHTML = `<p style="color:red;">❌ Failed to load news. Try again later.</p>`;
-        lastUpdated.textContent = `⚠️ Error: ${err.message}`;
-      }
-    }
-
-    fetchAllNews();
-    setInterval(fetchAllNews, 60 * 1000); // Auto-refresh every 1 minute
-  </script>
+  cityFilter.addEventListener("change", fetchNews);
+  fetchNews();
+  setInterval(fetchNews, 60 * 1000); // refresh every 1 minute
+</script>
 
 </body>
 </html>
