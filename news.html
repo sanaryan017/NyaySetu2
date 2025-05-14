@@ -4,142 +4,112 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Crime News - NyaySetu</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
-    body {
-      font-family: sans-serif;
-      background-color: #f2f2f2;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background-color: #007bff;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .container {
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-
     .news-card {
       background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .news-card h3 {
-      margin-bottom: 10px;
-      font-size: 18px;
-    }
-
-    .timestamp {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-
-    .last-updated {
-      font-size: 14px;
-      color: #333;
+      padding: 15px;
+      border-radius: 8px;
       margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-
-    .refresh-btn {
-      margin-bottom: 20px;
-      padding: 10px 16px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
+    .news-card h3 {
+      margin-bottom: 5px;
     }
-
-    .refresh-btn:hover {
-      background-color: #0056b3;
-    }
-
-    @media (max-width: 600px) {
-      .news-card h3 {
-        font-size: 16px;
-      }
-
-      .refresh-btn {
-        width: 100%;
-      }
+    .timestamp {
+      color: gray;
+      font-size: 14px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>📰 NyaySetu Crime News</h1>
+    <div class="header-top">
+      <h1>NyaySetu</h1>
+      <div class="user-controls">
+        <a href="dashboard.html"><button class="logout-btn">Back to Dashboard</button></a>
+      </div>
+    </div>
   </header>
 
   <div class="container">
-    <div class="last-updated" id="lastUpdated">⏳ Loading...</div>
-    <button class="refresh-btn" onclick="fetchNews()">🔁 Refresh</button>
-    <div id="newsContainer">Loading crime news...</div>
+    <div class="login-box">
+      <h2>Latest Indian Crime News</h2>
+      <div id="newsContainer" class="crime-info-box">Loading news...</div>
+    </div>
   </div>
 
   <script>
-    const apiKey = "c6dee0fde459431e913ced37322cc968";
-    const newsContainer = document.getElementById("newsContainer");
-    const lastUpdated = document.getElementById("lastUpdated");
+  const apiKey = "892b2258b8ad0d166e5fdbe1547f47db"; // GNews API Key
+  const container = document.getElementById('newsContainer');
+  const testMode = false; // 🔄 Set to true for test/fallback mode
 
-    function formatTime(date) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    }
+  function displayArticle(article) {
+    const div = document.createElement('div');
+    div.className = 'news-card';
+    div.innerHTML = `
+      <h3>${article.title}</h3>
+      <div class="timestamp">${new Date(article.publishedAt).toLocaleString()}</div>
+      <p>${article.description || 'No description available.'}</p>
+      <a href="${article.url}" target="_blank">Read full article</a>
+    `;
+    container.appendChild(div);
+  }
 
-    function updateTimestamp() {
-      const now = new Date();
-      lastUpdated.textContent = `🕒 Last updated at: ${formatTime(now)}`;
-    }
-
-    function displayArticle(article) {
-      const div = document.createElement("div");
-      div.className = "news-card";
-      div.innerHTML = `
-        <h3>${article.title}</h3>
-        <div class="timestamp">🗓 ${new Date(article.publishedAt).toLocaleString()}</div>
-        <p>${article.description || "No description available."}</p>
-        <p><strong>Source:</strong> ${article.source.name}</p>
-        <a href="${article.url}" target="_blank">🔗 Read full article</a>
-      `;
-      newsContainer.appendChild(div);
-    }
-
-    async function fetchNews() {
-      newsContainer.innerHTML = "🔄 Loading latest crime news...";
-      try {
-        const url = `https://newsapi.org/v2/everything?q=crime&language=en&pageSize=25&sortBy=publishedAt&apiKey=${apiKey}`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        if (data.status !== "ok") {
-          throw new Error(data.message || "API error");
-        }
-
-        newsContainer.innerHTML = "";
-        data.articles.forEach(displayArticle);
-        updateTimestamp();
-      } catch (err) {
-        console.error("Error:", err);
-        newsContainer.innerHTML = `<p style="color:red;">❌ Failed to load news: ${err.message}</p>`;
-        lastUpdated.textContent = "⚠️ Error occurred while fetching news.";
+  function showFallbackNews() {
+    container.innerHTML = `<p style="color:red;">Live news not available. Showing sample news below:</p>`;
+    const fallbackNews = [
+      {
+        title: "Delhi man arrested for cyber fraud",
+        description: "A 27-year-old was arrested for duping people through fake websites.",
+        url: "#",
+        publishedAt: new Date().toISOString()
+      },
+      {
+        title: "Mumbai police bust major drug racket",
+        description: "Police seized narcotics worth ₹5 crore from a warehouse in Navi Mumbai.",
+        url: "#",
+        publishedAt: new Date().toISOString()
       }
+    ];
+    fallbackNews.forEach(displayArticle);
+  }
+
+  async function fetchNews() {
+    container.innerHTML = "🔄 Fetching latest crime news...";
+
+    if (testMode) {
+      console.warn("🧪 Test mode enabled. Showing fallback news.");
+      showFallbackNews();
+      return;
     }
 
-    fetchNews();
-    setInterval(fetchNews, 2 * 60 * 1000); // Auto-refresh every 2 minutes
-  </script>
+    try {
+      const url = `https://gnews.io/api/v4/search?q=crime&lang=en&country=in&max=20&t=${Date.now()}&apikey=${apiKey}`;
+      console.log("🔍 Fetching news from:", url);
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+      const data = await response.json();
+      console.log("✅ Fetched news articles:", data.articles);
+
+      if (data.articles?.length > 0) {
+        container.innerHTML = "";
+        data.articles.forEach(displayArticle);
+      } else {
+        container.innerText = "❌ No crime news found. Try again later.";
+      }
+    } catch (error) {
+      console.error("❌ Error fetching news:", error.message);
+      showFallbackNews();
+    }
+  }
+
+  fetchNews();
+</script>
 
 </body>
 </html>
-
