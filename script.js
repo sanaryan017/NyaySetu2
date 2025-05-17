@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const password = document.getElementById("loginPassword").value;
 
         const user = users.find(u => u.username === username);
-
         if (!user) {
             document.getElementById("loginError").innerText = "User not found. Please sign up.";
         } else if (decode(user.password) !== password) {
@@ -153,50 +152,49 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = "result.html";
     });
 
-    // RESULT PAGE
+    // RESULT PAGE – ONLY BNS
     if (window.location.pathname.endsWith("result.html")) {
         const crimeType = localStorage.getItem("selectedCrime");
 
         const crimeData = {
-            theft: { ipc: "IPC 378", bns: "BNS 303", action: "File FIR", punishment: "3 years or fine", steps: "Go to the nearest police station with evidence. File FIR under IPC 378 / BNS 303." },
-            assault: { ipc: "IPC 351", bns: "BNS 130", action: "Police complaint", punishment: "3 months or fine", steps: "Submit medical report and file complaint." },
-            fraud: { ipc: "IPC 420", bns: "BNS 316", action: "Report to EOW", punishment: "7 years and fine", steps: "Collect transaction proof and approach EOW." },
-            murder: { ipc: "IPC 302", bns: "BNS 101", action: "Immediate FIR and arrest", punishment: "Death or life imprisonment", steps: "Report to police immediately and ensure postmortem." },
-            cybercrime: { ipc: "IT Act Sec 66", bns: "BNS 109", action: "Cyber Cell Complaint", punishment: "3 years and fine", steps: "Use cybercrime.gov.in or visit cyber cell." },
-            rape: { ipc: "IPC 376", bns: "BNS 63", action: "Police complaint", punishment: "7 years to life", steps: "Medical exam required. Police and helplines can help." },
-            kidnapping: { ipc: "IPC 363", bns: "BNS 137", action: "File FIR", punishment: "7 years and fine", steps: "Report last known location of victim to police." },
-            bribery: { ipc: "IPC 171E", bns: "BNS 214", action: "Report to ACB", punishment: "1 year or fine", steps: "Submit recorded evidence if safe." },
-            defamation: { ipc: "IPC 499", bns: "BNS 356", action: "File complaint", punishment: "2 years or fine", steps: "Give false statement proof to magistrate." },
-            domesticViolence: { ipc: "IPC 498A", bns: "BNS 85", action: "Police complaint", punishment: "3 years and fine", steps: "Approach police or Protection Officer." },
-            drugs: { ipc: "NDPS Act", bns: "NDPS Act (unchanged)", action: "Narcotics Bureau", punishment: "10 years to life", steps: "Submit anonymous tip or complaint." },
-            stalking: { ipc: "IPC 354D", bns: "BNS 78", action: "Police complaint", punishment: "3 years and fine", steps: "Keep message/call records." },
-            arson: { ipc: "IPC 435", bns: "BNS 324", action: "File FIR", punishment: "7 years and fine", steps: "Submit fire dept report and photos." },
-            extortion: { ipc: "IPC 384", bns: "BNS 308", action: "Police complaint", punishment: "3 years and fine", steps: "Provide logs, messages or witness." },
-            robbery: { ipc: "IPC 392", bns: "BNS 309", action: "File FIR", punishment: "10 years and fine", steps: "Police, CCTV or witness help." },
-            acidAttack: { ipc: "IPC 326A", bns: "BNS 122", action: "Police complaint", punishment: "10 years to life", steps: "File FIR, seek emergency treatment." },
-            dowryHarassment: { ipc: "IPC 498A", bns: "BNS 85", action: "Police complaint", punishment: "3 years and fine", steps: "Contact NCW or police. Keep proof." },
-            blackmail: { ipc: "IPC 503", bns: "BNS 351", action: "File complaint", punishment: "2 years and fine", steps: "Save screenshots/messages. Report." },
-            humanTrafficking: { ipc: "IPC 370", bns: "BNS 139", action: "File FIR", punishment: "7–10 years and fine", steps: "Dial 112 or AHTU with details." }
+            theft: { bns: "BNS 303", action: "File FIR", punishment: "3 years or fine", steps: "Go to nearest police station with any proof like bills, witness etc." },
+            assault: { bns: "BNS 130", action: "Police complaint", punishment: "3 months or fine", steps: "File a complaint with medical proof, if injured." },
+            fraud: { bns: "BNS 316", action: "Report to EOW", punishment: "7 years and fine", steps: "Collect documents/messages and go to police or EOW." },
+            murder: { bns: "BNS 101", action: "Immediate FIR", punishment: "Death or life imprisonment", steps: "Call police or dial 112. Provide details." },
+            cybercrime: { bns: "BNS 109", action: "Cyber Cell Complaint", punishment: "3 years and fine", steps: "File complaint at cybercrime.gov.in with screenshots." },
+            rape: { bns: "BNS 63", action: "Police complaint", punishment: "7 years to life", steps: "Medical exam needed. Dial 112 or go to police." },
+            kidnapping: { bns: "BNS 137", action: "File FIR", punishment: "7 years and fine", steps: "Report with last known location of victim." },
+            bribery: { bns: "BNS 214", action: "Report to ACB", punishment: "1 year or fine", steps: "If safe, record proof and submit to ACB." },
+            defamation: { bns: "BNS 356", action: "File complaint", punishment: "2 years or fine", steps: "Take printed/recorded proof to magistrate." },
+            domesticViolence: { bns: "BNS 85", action: "Police complaint", punishment: "3 years and fine", steps: "Visit police or women's help center." },
+            drugs: { bns: "NDPS Act", action: "Narcotics Bureau", punishment: "10 years to life", steps: "Submit proof/tip to NCB or police." },
+            stalking: { bns: "BNS 78", action: "Police complaint", punishment: "3 years and fine", steps: "Save messages/calls. Report to police." },
+            arson: { bns: "BNS 324", action: "File FIR", punishment: "7 years and fine", steps: "Provide photos or fire dept report." },
+            extortion: { bns: "BNS 308", action: "Police complaint", punishment: "3 years and fine", steps: "Provide logs or evidence to police." },
+            robbery: { bns: "BNS 309", action: "File FIR", punishment: "10 years and fine", steps: "Submit CCTV or eyewitness info." },
+            acidAttack: { bns: "BNS 122", action: "Police complaint", punishment: "10 years to life", steps: "Call emergency. Seek medical care and file FIR." },
+            dowryHarassment: { bns: "BNS 85", action: "Police complaint", punishment: "3 years and fine", steps: "Contact police or NCW with messages or threats." },
+            blackmail: { bns: "BNS 351", action: "File complaint", punishment: "2 years and fine", steps: "Keep screenshot evidence. File complaint." },
+            humanTrafficking: { bns: "BNS 139", action: "File FIR", punishment: "7–10 years and fine", steps: "Contact AHTU or dial 112. Provide info." }
         };
 
         const crimeInfo = crimeData[crimeType];
+
         if (crimeInfo && document.getElementById("crimeInfo")) {
             const readableName = crimeType.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
             document.getElementById("crimeInfo").innerHTML = `
                 <h3>Crime Detected: ${readableName}</h3>
-                <p><strong>IPC Section:</strong> ${crimeInfo.ipc}</p>
                 <p><strong>BNS Section:</strong> ${crimeInfo.bns}</p>
                 <p><strong>Action:</strong> ${crimeInfo.action}</p>
                 <p><strong>Punishment:</strong> ${crimeInfo.punishment}</p>
                 <p><strong>Next Steps:</strong> ${crimeInfo.steps}</p>
-                <p style="color: darkred; font-style: italic; margin-top: 10px;">
-                    ⚖️ Note: IPC (Indian Penal Code) has been replaced by BNS (Bharatiya Nyaya Sanhita). Refer to the updated BNS section for revised legal provisions and amendments.
             `;
         } else {
             document.getElementById("crimeInfo").innerText = "❌ Crime not found or not recognized.";
         }
     }
 });
+
 
 
 
