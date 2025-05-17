@@ -178,6 +178,16 @@ a:hover {
     color: #34495e;
 }
 
+/* ⚖️ IPC to BNS Note */
+.law-note {
+    color: #b03a2e;
+    font-style: italic;
+    font-size: 15px;
+    margin-top: 12px;
+    border-top: 1px dashed #ccc;
+    padding-top: 10px;
+}
+
 /* Responsive Design */
 @media screen and (max-width: 768px) {
     .login-box {
@@ -208,10 +218,11 @@ a:hover {
     input, textarea, button {
         font-size: 14px;
     }
+
     header h1 {
-    text-align: center;
-    font-size: 26px;
+        text-align: center;
+        font-size: 26px;
+    }
 }
 
-}
 
